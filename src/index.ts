@@ -103,14 +103,17 @@ const PAGINATION = [...Array(+PAGE_COUNT).keys()].map(i => i + 1);
   }
 
   durations = durations.filter((value, index) => index % 2 == 0).map(str => timestring(str))
-  const testRuns = durations.map((value, index) => ({duration: value, url: testRunUrls[index]}))
+  const testRuns = durations.map((value, index) => ({index: index, duration: value, url: testRunUrls[index]}))
+  const durationsPlot = durations.map((value, index) => ({x: index, y: value}))
+  
   console.log(testRunUrls)
   console.log(testRunUrls.length)
   console.log(durations)
   console.log(durations.length)
 
-  fs.writeFileSync(`test-durations.json`, JSON.stringify(durations))
-  fs.writeFileSync(`test-runs.json`, JSON.stringify(testRuns))
+  fs.writeFileSync('test-durations.json', JSON.stringify(durations))
+  fs.writeFileSync('test-runs.json', JSON.stringify(testRuns))
+  fs.writeFileSync('durations-plot.json', JSON.stringify(durationsPlot))
 
   await page.close();
 })();
