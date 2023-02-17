@@ -23,6 +23,7 @@
     "dotenv": "^16.0.3",
     "octokit": "^2.0.14",
     "playwright": "^1.30.0",
+    "timestring": "^6.0.0",
     "ts-node": "^10.9.1"
   }
 }

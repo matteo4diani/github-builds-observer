@@ -1,3 +1,6 @@
+import fs from 'fs'
+
+const timestring = require('timestring')
 const dotenv = require('dotenv');
 const { chromium } = require('playwright');
 
@@ -21,10 +24,20 @@ const PAGINATION = [...Array(+PAGE_COUNT).keys()].map(i => i + 1);
   const browser = await chromium.launch({
     headless: false
   });
+
   const context = await browser.newContext()
   context.setDefaultTimeout(1000 * 1000 * 1000)
-  // Open new page
+
+  /**
+   * Open a new page
+   */
+
   const page = await context.newPage()
+
+  /**
+   * Login to GitHub
+   */
+
   await page.goto('https://www.github.com')
 
   await Promise.all([
@@ -39,6 +52,10 @@ const PAGINATION = [...Array(+PAGE_COUNT).keys()].map(i => i + 1);
     page.waitForNavigation(),
     page.click('input[type="submit"]')
   ]);
+
+  /**
+   * Login to GitHub organization SSO
+   */
 
   await Promise.all([
     page.waitForNavigation(),
@@ -63,23 +80,34 @@ const PAGINATION = [...Array(+PAGE_COUNT).keys()].map(i => i + 1);
 
   page.click('button[type="submit"]')
 
+  /**
+   * Scrape the URLs for workflow runs
+   */
+
   const query = `is%3A${GITHUB_WORKFLOW_STATUS}+branch%3A${GITHUB_BRANCH}`;
 
   const testRunUrls = []
+  let durations = []
 
   for (const pg of PAGINATION) {
     await page.goto(`${GITHUB_REPOSITORY_URL}/actions/workflows/${GITHUB_WORKFLOW}?page=${pg}&query=${query}`)
 
     await page.waitForSelector('a.Link--primary')
   
-    const rows = await page.locator('a.Link--primary')
-  
-    testRunUrls.push(...(await rows.evaluateAll(list => list.map(element => element.href))));
+    const links = await page.locator('a.Link--primary')
+    const spans = await page.locator('span.issue-keyword')
+
+    testRunUrls.push(...(await links.evaluateAll(list => list.map(element => element.href))));
+    durations.push(...(await spans.evaluateAll(list => list.map(element => element.innerHTML.trim()))));
+
   }
 
-  
-  console.log(testRunUrls)
+  durations = durations.filter((value, index) => index % 2 == 0).map(str => timestring(str))
 
-  // Close page
-  //await page.close();
+  console.log(testRunUrls)
+  console.log(testRunUrls.length)
+  console.log(durations)
+  console.log(durations.length)
+
+  fs.writeFileSync(`test-durations.json`, JSON.stringify(durations))
 })();
