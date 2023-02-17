@@ -112,4 +112,5 @@ const PAGINATION = [...Array(+PAGE_COUNT).keys()].map(i => i + 1);
   fs.writeFileSync(`test-durations.json`, JSON.stringify(durations))
   fs.writeFileSync(`test-runs.json`, JSON.stringify(testRuns))
 
+  await page.close();
 })();
