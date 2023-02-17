@@ -103,11 +103,13 @@ const PAGINATION = [...Array(+PAGE_COUNT).keys()].map(i => i + 1);
   }
 
   durations = durations.filter((value, index) => index % 2 == 0).map(str => timestring(str))
-
+  const testRuns = durations.map((value, index) => ({duration: value, url: testRunUrls[index]}))
   console.log(testRunUrls)
   console.log(testRunUrls.length)
   console.log(durations)
   console.log(durations.length)
 
   fs.writeFileSync(`test-durations.json`, JSON.stringify(durations))
+  fs.writeFileSync(`test-runs.json`, JSON.stringify(testRuns))
+
 })();
