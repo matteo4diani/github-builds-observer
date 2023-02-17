@@ -20,6 +20,7 @@
     "@octokit/types": "^9.0.0",
     "@playwright/test": "^1.30.0",
     "@types/node": "^18.13.0",
+    "chart.js": "^3.5.1",
     "dotenv": "^16.0.3",
     "octokit": "^2.0.14",
     "playwright": "^1.30.0",
