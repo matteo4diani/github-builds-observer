@@ -11,7 +11,6 @@ const GITHUB_USERNAME = process.env.GITHUB_USERNAME;
 const GITHUB_PASSWORD = process.env.GITHUB_PASSWORD;
 const GITHUB_REPOSITORY = process.env.GITHUB_REPOSITORY;
 const GITHUB_REPOSITORY_URL = `https://www.github.com/${GITHUB_ORGANIZATION}/${GITHUB_REPOSITORY}`;
-const GITHUB_WORKFLOWS_URI = `${GITHUB_REPOSITORY_URL}/actions/workflows`;
 const GITHUB_WORKFLOW = process.env.GITHUB_WORKFLOW;
 const GITHUB_WORKFLOW_STATUS = process.env.GITHUB_WORKFLOW_STATUS;
 const GITHUB_BRANCH = process.env.GITHUB_BRANCH;
@@ -102,6 +101,10 @@ const PAGINATION = [...Array(+PAGE_COUNT).keys()].map(i => i + 1);
 
   }
 
+  /**
+   * Clean duplicate data / Transform data in numeric format
+   */
+
   durations = durations.filter((value, index) => index % 2 == 0).map(str => timestring(str))
   const testRuns = durations.map((value, index) => ({index: index, duration: value, url: testRunUrls[index]}))
   const durationsPlot = durations.map((value, index) => ({x: index, y: value}))
@@ -111,9 +114,15 @@ const PAGINATION = [...Array(+PAGE_COUNT).keys()].map(i => i + 1);
   console.log(durations)
   console.log(durations.length)
 
-  fs.writeFileSync('test-durations.json', JSON.stringify(durations))
-  fs.writeFileSync('test-runs.json', JSON.stringify(testRuns))
-  fs.writeFileSync('durations-plot.json', JSON.stringify(durationsPlot))
+  /**
+   * Write output files
+   */
+
+  if (!fs.existsSync('output')) fs.mkdirSync('output', {recursive: true})
+
+  fs.writeFileSync('output/test-durations.json', JSON.stringify(durations))
+  fs.writeFileSync('output/test-runs.json', JSON.stringify(testRuns))
+  fs.writeFileSync('output/durations-plot.json', JSON.stringify(durationsPlot))
 
   await page.close();
 })();
