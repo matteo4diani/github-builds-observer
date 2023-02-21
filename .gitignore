@@ -1,3 +1,5 @@
 **/.env
 **/node_modules
 lib/
+output/
+plot_util/data

@@ -18,12 +18,11 @@ BRANCH = os.getenv('GITHUB_BRANCH')
 # %matplotlib widget
 
 x = json.load(open('data/test-durations.json', 'rb'))
-x.reverse()
 
 plt.plot(range(len(x)), list(map(lambda v: v/60, x)), marker='o')
 plt.xlabel('Test Run #')
 plt.ylabel('Duration')
-plt.title(f'{WORKFLOW}.yml ({STATUS} runs on {BRANCH})')
+plt.title(f'{WORKFLOW} ({STATUS} runs on {BRANCH})')
 plt.grid(True)
 
 # Add a vertical line on the events you want to highlight
