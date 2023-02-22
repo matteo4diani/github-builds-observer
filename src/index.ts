@@ -1,4 +1,4 @@
-import fs, { write } from 'fs'
+import fs from 'fs'
 
 const timestring = require('timestring')
 const dotenv = require('dotenv')
@@ -22,7 +22,7 @@ let SSO_PASSWORD = process.env.SSO_PASSWORD
 const PAGE_COUNT = +process.env.PAGE_COUNT
 
 const main: () => Promise<void> = async () => {
-  console.log('👀 Welcome 👋 Let\' start scraping! 🚀')
+  console.log('👀 Welcome 👋 Let\'s start scraping! 🚀')
 
   const pw: Playwright = await initPlaywright()
   
@@ -206,6 +206,8 @@ async function scrape(pw: Playwright, cfg: QueryConfig): Promise<Results> {
   let durations = []
 
   const pagination = [...Array(cfg.pages).keys()].map(i => i + 1)
+
+  console.log(`🌍 Scraping "${githubRepoUrl}/actions/workflows/${cfg.workflow}?query=${query}"`)
 
   for (const pg of pagination) {
     console.log(`⏳ Scraping page ${pg} of ${pagination.length}...`)
