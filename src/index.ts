@@ -98,7 +98,7 @@ async function login(pw: Playwright): Promise<void> {
     pw.page.click('input[type="submit"]')
   ])
 
-  console.log('👀 Grab your phone 📲 and perform MFA. You may need to enter a code in the browser! 💻')
+  console.log('🔐 Grab your phone 📲 and perform MFA. You may need to enter a code in the browser! 💻')
 
   await Promise.all([
     pw.page.waitForNavigation(),

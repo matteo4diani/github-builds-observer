@@ -26,7 +26,7 @@ plt.title(f'{WORKFLOW} ({STATUS} runs on {BRANCH})')
 plt.grid(True)
 
 # Add a vertical line on the events you want to highlight
-plt.axvline(x = 0, color = 'r', linestyle='dashed', label = 'Significant event')
+plt.axvline(x = 130, color = 'r', linestyle='dashed', label = 'Significant event')
 
 # Adjust ticks to readable format
 ax = plt.gca()
