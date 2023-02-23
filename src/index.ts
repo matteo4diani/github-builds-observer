@@ -59,8 +59,9 @@ type QueryConfig = {
 }
 
 type Results = {
-  urls: string[]
-  durations: number[]
+  urls: string[],
+  durations: number[],
+  error: false | string
 }
 
 async function initPlaywright(): Promise<Playwright> {
@@ -204,6 +205,9 @@ async function scrape(pw: Playwright, cfg: QueryConfig): Promise<Results> {
 
   let urls = []
   let durations = []
+  let error = false
+
+  const results: Results = {urls, durations, error}
 
   const pagination = [...Array(cfg.pages).keys()].map(i => i + 1)
 
@@ -214,24 +218,35 @@ async function scrape(pw: Playwright, cfg: QueryConfig): Promise<Results> {
 
     await pw.page.goto(`${githubRepoUrl}/actions/workflows/${cfg.workflow}?page=${pg}&query=${query}`)
 
-    await pw.page.waitForSelector('a.Link--primary')
+    try {
+      await pw.page.waitForSelector('a.Link--primary', { timeout: 5000 })
+    } catch {
+      results.error = `❌😿 Could not find page ${pg}. Quitting current run early...`
+      break
+    }
   
     const links = await pw.page.locator('a.Link--primary')
     const spans = await pw.page.locator('span.issue-keyword')
 
-    urls.push(...(await links.evaluateAll(list => list.map(element => element.href))));
-    durations.push(...(await spans.evaluateAll(list => list.map(element => element.innerHTML.trim()))));
+    results.urls.push(...(await links.evaluateAll(list => list.map(element => element.href))));
+    results.durations.push(...(await spans.evaluateAll(list => list.map(element => element.innerHTML.trim()))));
   }
-
-  console.log(`😈 Scraped ${pagination.length} pages!`)
-
-  durations = durations.filter((value, index) => index % 2 == 0)
+  
+  results.durations = results.durations.filter((_, index) => index % 2 == 0)
   .map(str => timestring(str))
   .reverse()
 
-  urls = urls.reverse()
+  results.urls = results.urls.reverse()
 
-  return {urls, durations}
+  if (results.error) {
+    console.log(results.error)
+    console.log(`🚀 This run contains errors. Please revise. Scraped ${results.urls.length} records!`)
+
+    return results
+  }
+  
+  console.log(`🚀 Scraped ${pagination.length} pages containing ${results.urls.length} records!`)
+  return results
 }
 
 function writeToDisk(results: Results, cfg: QueryConfig): void {
